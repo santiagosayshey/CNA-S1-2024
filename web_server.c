@@ -50,9 +50,8 @@ int main(int argc, char *argv[])
 
   /* 1) Create a socket */
   /* START CODE SNIPPET 1 */
-  int server_socket;
-  server_socket = socket(AF_INET, SOCK_STREAM, 0);
-  if (server_socket == -1) {
+  listen_socket = socket(AF_INET, SOCK_STREAM, 0);
+  if (listen_socket == -1) {
     printf("Could not create socket");
   }
   printf("Socket created successfully.\n");
@@ -90,7 +89,7 @@ int main(int argc, char *argv[])
 
   /* 3) Bind the socket to the address information set in server_address */
   /* START CODE SNIPPET 3 */
-  if (bind(server_socket, (struct sockaddr *)&server_address, sizeof(server_address)) < 0) {
+  if (bind(listen_socket, (struct sockaddr *)&server_address, sizeof(server_address)) < 0) {
     perror("bind failed");
     exit(EXIT_FAILURE);
   }
@@ -99,7 +98,7 @@ int main(int argc, char *argv[])
 
   /* 4) Start listening for connections */
   /* START CODE SNIPPET 4 */
-  if (listen(server_socket, 10) < 0) {
+  if (listen(listen_socket, 10) < 0) {
     perror("listen failed");
     exit(EXIT_FAILURE);
   }
@@ -114,7 +113,7 @@ int main(int argc, char *argv[])
     /* 5) Accept a connection */
     /* START CODE SNIPPET 5 */
     socklen_t client_address_len = sizeof(client_address);
-    connection_socket = accept(server_socket, (struct sockaddr *)&client_address, &client_address_len);
+    connection_socket = accept(listen_socket, (struct sockaddr *)&client_address, &client_address_len);
     if (connection_socket < 0) {
         perror("accept failed");
         continue; // or exit based on your error handling policy
@@ -146,6 +145,13 @@ int main(int argc, char *argv[])
        * see helper.h and httpreq.h                      
        */
       /* START CODE SNIPPET 6 */
+        if (!Parse_HTTP_Request(connection_socket, &new_request)) {
+          fprintf(stderr, "Error parsing HTTP request\n");
+          close(connection_socket); // Ensure the socket is closed before exiting
+          exit(EXIT_FAILURE);       // Exit the child process if parsing fails
+        }
+        /* Print the parsed request method and URI for debugging */
+        printf("Parsed HTTP Request: Method = %s, URI = %s\n", new_request.method, new_request.URI);
       /* END CODE SNIPPET 6 */
 
       /* 7) Decide which status_code and reason phrase to return to client */
