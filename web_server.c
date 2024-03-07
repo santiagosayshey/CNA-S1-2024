@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <sys/wait.h>
+#include <arpa/inet.h>
 
 #include "config.h"
 #include "helpers.h"
@@ -54,6 +55,7 @@ int main(int argc, char *argv[])
   if (server_socket == -1) {
     printf("Could not create socket");
   }
+  printf("Socket created successfully.\n");
   /* END CODE SNIPPET 1 */
 
   /* Check command-line argument for port and extract
@@ -92,10 +94,16 @@ int main(int argc, char *argv[])
     perror("bind failed");
     exit(EXIT_FAILURE);
   }
+  printf("Bind successful. Listening on port %d...\n", port);
   /* END CODE SNIPPET 3 */
 
   /* 4) Start listening for connections */
   /* START CODE SNIPPET 4 */
+  if (listen(server_socket, 10) < 0) {
+    perror("listen failed");
+    exit(EXIT_FAILURE);
+  }
+  printf("Server is now listening on port %d...\n", port);
   /* END CODE SNIPPET 4 */
 
   /* Main server loop
@@ -105,6 +113,15 @@ int main(int argc, char *argv[])
   {
     /* 5) Accept a connection */
     /* START CODE SNIPPET 5 */
+    socklen_t client_address_len = sizeof(client_address);
+    connection_socket = accept(server_socket, (struct sockaddr *)&client_address, &client_address_len);
+    if (connection_socket < 0) {
+        perror("accept failed");
+        continue; // or exit based on your error handling policy
+    }
+    char clientIP[INET_ADDRSTRLEN]; // Buffer to store the IP address in string format
+    inet_ntop(AF_INET, &client_address.sin_addr, clientIP, INET_ADDRSTRLEN); // Convert the IP to a string
+    printf("Accepted connection from %s:%d\n", clientIP, ntohs(client_address.sin_port));
     /* END CODE SNIPPET 5 */
 
     /* Fork a child process to handle this request */
