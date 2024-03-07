@@ -49,6 +49,11 @@ int main(int argc, char *argv[])
 
   /* 1) Create a socket */
   /* START CODE SNIPPET 1 */
+  int server_socket;
+  server_socket = socket(AF_INET, SOCK_STREAM, 0);
+  if (server_socket == -1) {
+    printf("Could not create socket");
+  }
   /* END CODE SNIPPET 1 */
 
   /* Check command-line argument for port and extract
