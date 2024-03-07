@@ -193,7 +193,7 @@ int main(int argc, char *argv[])
        * server send an entity body?
        */
       /* START CODE SNIPPET 10 */
-      is_ok_to_send_resource = (strcmp(new_request.method, "GET") == 0) && (status_code == 200);
+      is_ok_to_send_resource = ((strcmp(new_request.method, "GET") == 0) || (strcmp(new_request.method, "HEAD") == 0)) && (status_code == 200);
       /* END CODE SNIPPET 10 */
 
       if (is_ok_to_send_resource)
