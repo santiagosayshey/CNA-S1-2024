@@ -175,6 +175,7 @@ int main(int argc, char *argv[])
        * sprintf(response_buffer, "HTTP/1.0 %d %s\r\n", ??, ??);
        */
       /* START CODE SNIPPET 8 */
+      sprintf(response_buffer, "HTTP/1.0 %d %s\r\n\r\n", status_code, status_phrase);
       /* END CODE SNIPPET 8 */
 
       printf("Sending response line: %s\n", response_buffer);
@@ -184,6 +185,7 @@ int main(int argc, char *argv[])
        * send(??, response_buffer, strlen(response_buffer), 0);
        */
       /* START CODE SNIPPET 9 */
+      send(connection_socket, response_buffer, strlen(response_buffer), 0);
       /* END CODE SNIPPET 9 */
 
       bool is_ok_to_send_resource = false;
@@ -191,6 +193,7 @@ int main(int argc, char *argv[])
        * server send an entity body?
        */
       /* START CODE SNIPPET 10 */
+      is_ok_to_send_resource = (strcmp(new_request.method, "GET") == 0) && (status_code == 200);
       /* END CODE SNIPPET 10 */
 
       if (is_ok_to_send_resource)
@@ -205,6 +208,7 @@ int main(int argc, char *argv[])
          * send(??, "\r\n\r\n", strlen("\r\n\r\n"), 0);
          */
         /* START CODE SNIPPET 11 */
+        send(connection_socket, "\r\n", strlen("\r\n"), 0);
         /* END CODE SNIPPET 11 */
       }
 
