@@ -81,10 +81,17 @@ int main(int argc, char *argv[])
 
   /* 2) Set the values for the server address structure */
   /* START CODE SNIPPET 2 */
+  server_address.sin_family = AF_INET;                   // Set address family (IPv4)
+  server_address.sin_addr.s_addr = htonl(INADDR_ANY);    // Listen on any network interface
+  server_address.sin_port = htons(port);                 // Set port number, converting to network byte order
   /* END CODE SNIPPET 2 */
 
   /* 3) Bind the socket to the address information set in server_address */
   /* START CODE SNIPPET 3 */
+  if (bind(server_socket, (struct sockaddr *)&server_address, sizeof(server_address)) < 0) {
+    perror("bind failed");
+    exit(EXIT_FAILURE);
+  }
   /* END CODE SNIPPET 3 */
 
   /* 4) Start listening for connections */
