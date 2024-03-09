@@ -51,6 +51,6 @@ extern bool Is_Valid_Resource(char *);
  *-----------------------------------------------------------
  */
 
-extern void Send_Resource(int, char *);
+extern void Send_Resource(int socket, char *URI, const char *request_method);
 
 #endif

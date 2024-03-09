@@ -154,7 +154,7 @@ bool Is_Valid_Resource(char * URI) {
  *-----------------------------------------------------------
  */
 
-void Send_Resource(int socket, char * URI) {
+void Send_Resource(int socket, char *URI, const char *request_method) {
 
   char * server_directory,  * resource;
   char * location;
@@ -196,7 +196,7 @@ void Send_Resource(int socket, char * URI) {
   char c;
   long sz;
   char content_header[MAX_HEADER_LENGTH];
-  
+
   /* get size of file for content_length header */
   fseek(file, 0L, SEEK_END);
   sz = ftell(file);
@@ -206,16 +206,21 @@ void Send_Resource(int socket, char * URI) {
   printf("Sending headers: %s\n", content_header);
   send(socket, content_header, strlen(content_header), 0);
 
-  printf("Sending file contents of %s\n", location);
-  free(server_directory);
+  if (strcmp(request_method, "GET") == 0) {
+    printf("Sending file contents of %s\n", location);
+    free(server_directory);
 
-  while ( (c = fgetc(file)) != EOF ) {
-    if ( send(socket, &c, 1, 0) < 1 ) {
-      fprintf(stderr, "Error sending file.");
-      exit(EXIT_FAILURE);
+    while ((c = fgetc(file)) != EOF) {
+      if (send(socket, &c, 1, 0) < 1) {
+        fprintf(stderr, "Error sending file.");
+        exit(EXIT_FAILURE);
+      }
+      printf("%c", c);
     }
-    printf("%c", c);
+    puts("\nfinished reading file\n");
+  } else if (strcmp(request_method, "HEAD") == 0) {
+    printf("HEAD request, not sending file contents.\n");
   }
-  puts("\nfinished reading file\n");
+
   fclose(file);
 }
