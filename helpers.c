@@ -250,3 +250,31 @@ void Send_Resource(int socket, char *URI, const char *request_method) {
 
   fclose(file);
 }
+
+void Send_Error_Response(int socket, int status_code, const char *status_phrase) {
+  char response_buffer[MAX_HTTP_RESPONSE_SIZE];
+  char error_html_path[PATH_MAX];
+  char error_html[MAX_HTTP_RESPONSE_SIZE];
+
+  // Set the path to the error HTML file based on the status code
+  sprintf(error_html_path, "%s/%d.html", ERROR_DIR, status_code);
+
+  // Read the contents of the error HTML file
+  FILE *file = fopen(error_html_path, "r");
+  if (file == NULL) {
+    // If the file doesn't exist, use a default error message
+    sprintf(error_html, "<html><body><h1>%d %s</h1></body></html>", status_code, status_phrase);
+  } else {
+    fread(error_html, sizeof(char), MAX_HTTP_RESPONSE_SIZE, file);
+    fclose(file);
+  }
+
+  // Send the error response headers
+  sprintf(response_buffer, "HTTP/1.0 %d %s\r\n", status_code, status_phrase);
+  send(socket, response_buffer, strlen(response_buffer), 0);
+  sprintf(response_buffer, "Content-Type: text/html\r\nContent-Length: %lu\r\n\r\n", strlen(error_html));
+  send(socket, response_buffer, strlen(response_buffer), 0);
+
+  // Send the error HTML body
+  send(socket, error_html, strlen(error_html), 0);
+}

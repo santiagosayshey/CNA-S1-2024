@@ -158,15 +158,19 @@ int main(int argc, char *argv[])
       /* START CODE SNIPPET 7 */
       if (strcmp(new_request.method, "GET") == 0 || strcmp(new_request.method, "HEAD") == 0) {
         if (Is_Valid_Resource(new_request.URI)) {
-            status_code = 200;
-            status_phrase = "OK";
+          status_code = 200;
+          status_phrase = "OK";
         } else {
-            status_code = 404;
-            status_phrase = "Not Found";
+          status_code = 404;
+          status_phrase = "Not Found";
+          Send_Error_Response(connection_socket, status_code, status_phrase);
+          exit(EXIT_SUCCESS);
         }
       } else {
-          status_code = 501;
-          status_phrase = "Not Implemented";
+        status_code = 501;
+        status_phrase = "Not Implemented";
+        Send_Error_Response(connection_socket, status_code, status_phrase);
+        exit(EXIT_SUCCESS);
       }
       /* END CODE SNIPPET 7 */
 

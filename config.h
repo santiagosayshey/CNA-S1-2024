@@ -5,3 +5,4 @@
 #define MAX_CONTENT_TYPE_LENGTH 50  /* maximum length for content type */
 #define DEFAULT_PORT 8080           /* default port for server listening socket */
 #define RESOURCE_PATH "/public"     /* location of http files */
+#define ERROR_DIR "./public/errors" /* location of error files */

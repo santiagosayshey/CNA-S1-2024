@@ -53,6 +53,8 @@ extern bool Is_Valid_Resource(char *);
 
 extern void Send_Resource(int socket, char *URI, const char *request_method);
 
+extern void Send_Error_Response(int socket, int status_code, const char *status_phrase);
+
 extern void Get_Content_Type(const char *resource, char *content_type);
 
 #endif
