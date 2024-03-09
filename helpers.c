@@ -139,6 +139,30 @@ bool Is_Valid_Resource(char * URI) {
   }
 }
 
+void Get_Content_Type(const char *resource, char *content_type) {
+  const char *extension = strrchr(resource, '.');
+  
+  if (extension != NULL) {
+    if (strcmp(extension, ".html") == 0 || strcmp(extension, ".htm") == 0) {
+      strcpy(content_type, "text/html");
+    } else if (strcmp(extension, ".txt") == 0) {
+      strcpy(content_type, "text/plain");
+    } else if (strcmp(extension, ".css") == 0) {
+      strcpy(content_type, "text/css");
+    } else if (strcmp(extension, ".js") == 0) {
+      strcpy(content_type, "application/javascript");
+    } else if (strcmp(extension, ".jpg") == 0 || strcmp(extension, ".jpeg") == 0) {
+      strcpy(content_type, "image/jpeg");
+    } else if (strcmp(extension, ".png") == 0) {
+      strcpy(content_type, "image/png");
+    } else {
+      strcpy(content_type, "application/octet-stream");
+    }
+  } else {
+    strcpy(content_type, "application/octet-stream");
+  }
+}
+
 
 /*----------------------------------------------------------
  * Function: Send_Resource
@@ -195,14 +219,16 @@ void Send_Resource(int socket, char *URI, const char *request_method) {
 
   char c;
   long sz;
-  char content_header[MAX_HEADER_LENGTH];
+  char content_header[MAX_HEADER_LENGTH + MAX_CONTENT_TYPE_LENGTH];
+  char content_type[MAX_CONTENT_TYPE_LENGTH];
 
   /* get size of file for content_length header */
   fseek(file, 0L, SEEK_END);
   sz = ftell(file);
   rewind(file);
 
-  sprintf(content_header, "Content-Length: %ld\r\n\r\n", sz);
+  Get_Content_Type(resource, content_type);
+  sprintf(content_header, "Content-Type: %s\r\nContent-Length: %ld\r\n\r\n", content_type, sz);
   printf("Sending headers: %s\n", content_header);
   send(socket, content_header, strlen(content_header), 0);
 
